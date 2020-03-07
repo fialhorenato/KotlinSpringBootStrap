@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/kotlinstrap
+    username: postgres
+    password: postgres
+
+kotlinstrap:
+  app:
+    jwtSecret: mySuperSecretKey
+    jwtExpirationMs: 86400000
+
