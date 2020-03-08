@@ -1,6 +1,5 @@
 package com.kotlin.bootstrap.security.service
 
-import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 

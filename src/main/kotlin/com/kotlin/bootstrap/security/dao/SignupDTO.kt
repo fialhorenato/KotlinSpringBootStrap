@@ -1,8 +1,8 @@
 package com.kotlin.bootstrap.security.dao
 
-data class SignupDAO(
+data class SignupDTO(
         val username: String,
-        var email: String,
+        val email: String,
         val password: String,
-        var roles: Set<String>
+        val roles: Set<String>
 )

@@ -1,6 +1,5 @@
 package com.kotlin.bootstrap.security.entity
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import javax.persistence.*
 
 @Entity

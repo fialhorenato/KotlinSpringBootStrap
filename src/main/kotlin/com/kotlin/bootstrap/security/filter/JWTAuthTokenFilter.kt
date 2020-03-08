@@ -1,10 +1,8 @@
 package com.kotlin.bootstrap.security.filter
 
-import com.kotlin.bootstrap.security.exception.JWTException
 import com.kotlin.bootstrap.security.service.SecurityService
 import com.kotlin.bootstrap.security.utils.JWTUtils
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
@@ -42,5 +40,4 @@ class JWTAuthTokenFilter (var jwtUtils : JWTUtils, var securityService: Security
             headerAuth.substring(7, headerAuth.length)
         } else null
     }
-
 }

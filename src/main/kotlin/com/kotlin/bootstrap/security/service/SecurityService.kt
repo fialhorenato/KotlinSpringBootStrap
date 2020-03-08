@@ -1,7 +1,7 @@
 package com.kotlin.bootstrap.security.service
 
-import com.kotlin.bootstrap.security.dao.LoginDAO
-import com.kotlin.bootstrap.security.dao.SignupDAO
+import com.kotlin.bootstrap.security.dao.LoginDTO
+import com.kotlin.bootstrap.security.dao.SignupDTO
 import com.kotlin.bootstrap.security.entity.Role
 import com.kotlin.bootstrap.security.entity.User
 import com.kotlin.bootstrap.security.exception.UserAlreadyExistsException
@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.*
 import java.util.Objects.nonNull
+import javax.transaction.Transactional
 import kotlin.streams.toList
 
 @Service
@@ -26,10 +27,10 @@ class SecurityService(var authenticationManager: AuthenticationManager, var user
         val ROLE_PREFIX = "ROLE_"
     }
 
-    fun authenticate(loginDAO: LoginDAO): String {
+    fun authenticate(loginDTO: LoginDTO): String {
         // Try to authenticate the user with username and password
         val authentication = authenticationManager.authenticate(
-                UsernamePasswordAuthenticationToken(loginDAO.username, loginDAO.password))
+                UsernamePasswordAuthenticationToken(loginDTO.username, loginDTO.password))
 
         // Set the Security context with the authentication
         SecurityContextHolder.getContext().authentication = authentication
@@ -40,14 +41,14 @@ class SecurityService(var authenticationManager: AuthenticationManager, var user
         return jwt;
     }
 
-    fun createUser(signupDAO: SignupDAO): User {
-        if (userExists(signupDAO.username, signupDAO.email)) {
+    fun createUser(signupDTO: SignupDTO): User {
+        if (userExists(signupDTO.username, signupDTO.email)) {
             throw UserAlreadyExistsException()
         }
 
-        var user = User(id = null, username = signupDAO.username, email = signupDAO.email, password = encoder.encode(signupDAO.password), roles = Collections.emptyList())
+        var user = User(id = null, username = signupDTO.username, email = signupDTO.email, password = encoder.encode(signupDTO.password), roles = Collections.emptyList())
 
-        user.roles = signupDAO.roles
+        user.roles = signupDTO.roles
                 .stream()
                 .map { role -> toRole(role, user) }
                 .toList()
@@ -63,6 +64,7 @@ class SecurityService(var authenticationManager: AuthenticationManager, var user
         return userRepository.existsByUsernameOrEmail(username, email)
     }
 
+    @Transactional
     override fun loadUserByUsername(username: String): UserDetails {
         val user = userRepository.findByUsername(username)
         return user.takeIf { user -> user != null }.let { user ->  toUserDetails(user!!) }
@@ -73,6 +75,6 @@ class SecurityService(var authenticationManager: AuthenticationManager, var user
                 .filter { role: Role -> nonNull(role) }
                 .map { role: Role -> SimpleGrantedAuthority(ROLE_PREFIX + role.role) }
                 .toList()
-            return UserDetails(user.id, user.email, user.username, user.password, authorities)
+        return UserDetails(user.id, user.email, user.username, user.password, authorities)
     }
 }
