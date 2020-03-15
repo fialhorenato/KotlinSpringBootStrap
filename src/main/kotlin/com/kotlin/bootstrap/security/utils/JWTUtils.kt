@@ -50,6 +50,7 @@ class JWTUtils {
 
     fun getRolesFromJwtToken(token: String): List<String> {
         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).body["roles"] as List<String>
+        print("Teste")
     }
 
     fun getAuthoritiesFromJwtToken(token: String): List<SimpleGrantedAuthority> {
