@@ -8,6 +8,7 @@ import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.util.NestedServletException
@@ -49,6 +50,11 @@ class ErrorHandler() {
     @ExceptionHandler(UndeclaredThrowableException::class)
     fun handleUndeclaredThrowableException(ex: UndeclaredThrowableException): ResponseEntity<Any> {
         return ResponseEntity(generateErrorResponse(ex.undeclaredThrowable.cause?.localizedMessage ?: ex.localizedMessage),HttpStatus.BAD_REQUEST)
+    }
+
+    @ExceptionHandler(BadCredentialsException::class)
+    fun handleBadCredentialsException(ex: BadCredentialsException): ResponseEntity<Any> {
+        return ResponseEntity(generateErrorResponse(ex.localizedMessage),HttpStatus.NOT_FOUND)
     }
 
     @ExceptionHandler(Exception::class)

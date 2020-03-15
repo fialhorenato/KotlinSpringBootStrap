@@ -15,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.*
@@ -72,7 +73,7 @@ class SecurityService(
     @Transactional
     override fun loadUserByUsername(username: String): UserDetails {
         val user = userRepository.findByUsername(username)
-        return toUserDetails(user.takeIf { user -> user != null }!!)
+        return user?.let { toUserDetails(it) } ?: throw UsernameNotFoundException(String.format("Username %s not found", username))
     }
 
     private fun toUserDetails(user: User): UserDetails {
@@ -103,7 +104,6 @@ class SecurityService(
         return userRepository.findById(userId).orElseThrow(NotFoundException(String.format("User %d cannot be found", userId)))
     }
 
-    @Throws(NotFoundException::class)
     private fun getUser(username: String): User {
         return userRepository.findByUsername(username) ?: throw NotFoundException(String.format("User %s cannot be found", username))
     }
