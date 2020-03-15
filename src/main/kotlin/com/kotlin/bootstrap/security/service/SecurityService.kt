@@ -80,7 +80,13 @@ class SecurityService(
                 .filter { role: Role -> nonNull(role) }
                 .map { role: Role -> SimpleGrantedAuthority(ROLE_PREFIX + role.role) }
                 .toList()
-        return UserDetails(user.id, user.email, user.username, user.password, authorities)
+
+        var roles = user.roles.stream()
+                .filter { role: Role -> nonNull(role) }
+                .map { role -> role.role }
+                .toList()
+
+        return UserDetails(user.email, user.username, user.password, authorities, roles)
     }
 
     fun addRole(userId: String, role: String) {

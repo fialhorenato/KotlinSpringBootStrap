@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus.OK
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
-import javax.websocket.server.PathParam
 import kotlin.streams.toList
 
 @RestController
