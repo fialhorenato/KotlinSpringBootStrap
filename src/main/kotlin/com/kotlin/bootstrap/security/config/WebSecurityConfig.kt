@@ -19,6 +19,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 class WebSecurityConfig(@Lazy var jwtAuthTokenFilter: JWTAuthTokenFilter, @Lazy var securityService: SecurityService) : WebSecurityConfigurerAdapter() {
 
+    private val AUTH_WHITELIST = arrayOf( // -- swagger ui
+            "/v2/api-docs",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui.html",
+            "/webjars/**" // other public endpoints of your API may be appended to this array
+    )
+
     @Bean
     @Lazy
     override fun authenticationManagerBean(): AuthenticationManager {
@@ -44,6 +54,7 @@ class WebSecurityConfig(@Lazy var jwtAuthTokenFilter: JWTAuthTokenFilter, @Lazy 
                 .authorizeRequests()
                 .antMatchers("/security/**").permitAll()
                 .antMatchers("/api/test/**").permitAll()
+                .antMatchers(*AUTH_WHITELIST).permitAll()
                 .anyRequest()
                 .authenticated()
 

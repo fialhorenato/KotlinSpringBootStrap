@@ -100,10 +100,11 @@ class SecurityService(
     }
 
     private fun getUser(userId: Long): User {
-        return userRepository.findById(userId).orElseThrow(NotFoundException())
+        return userRepository.findById(userId).orElseThrow(NotFoundException(String.format("User %d cannot be found", userId)))
     }
 
+    @Throws(NotFoundException::class)
     private fun getUser(username: String): User {
-        return userRepository.findByUsername(username) ?: throw NotFoundException()
+        return userRepository.findByUsername(username) ?: throw NotFoundException(String.format("User %s cannot be found", username))
     }
 }

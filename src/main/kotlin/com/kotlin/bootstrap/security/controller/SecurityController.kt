@@ -15,11 +15,10 @@ import kotlin.streams.toList
 @RestController
 @RequestMapping(value = ["/security"])
 class SecurityController(var securityService: SecurityService) {
-
     @PostMapping(value = ["/signup"])
     fun signup(@RequestBody signupDTO: SignupDTO): ResponseEntity<Any> {
         var user = securityService.createUser(signupDTO)
-        var userCreatedDAO = UserCreatedDTO(user.username, user.password, user.roles.stream().map { t: Role ->  t.role }.toList())
+        var userCreatedDAO = UserCreatedDTO(user)
         return ResponseEntity(userCreatedDAO, CREATED)
     }
 
