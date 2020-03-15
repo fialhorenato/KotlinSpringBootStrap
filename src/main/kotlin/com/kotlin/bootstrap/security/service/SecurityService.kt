@@ -82,22 +82,20 @@ class SecurityService(
                 .map { role: Role -> SimpleGrantedAuthority(ROLE_PREFIX + role.role) }
                 .toList()
 
-        var roles = user.roles.stream()
-                .filter { role: Role -> nonNull(role) }
-                .map { role -> role.role }
+        var roles = user.roles
+                .filter { nonNull(it) }
+                .map { it.role }
                 .toList()
 
         return UserDetails(user.email, user.username, user.password, authorities, roles)
     }
 
-    fun addRole(userId: String, role: String) {
-        var role = Role(role = role, user = getUser(userId))
-        roleRepository.save(role)
+    fun addRole(username: String, role: String) {
+        roleRepository.save(Role(role = role, user = getUser(username)))
     }
 
     fun removeRole(userId: String, role: String) {
         roleRepository.deleteByUserAndRole(role = role, user = getUser(userId))
-
     }
 
     private fun getUser(userId: Long): User {

@@ -1,5 +1,6 @@
 package com.kotlin.bootstrap.security.utils
 
+import com.kotlin.bootstrap.security.exception.JWTException
 import com.kotlin.bootstrap.security.service.SecurityService.Companion.ROLE_PREFIX
 import com.kotlin.bootstrap.security.service.UserDetails
 import io.jsonwebtoken.*
@@ -48,8 +49,14 @@ class JWTUtils {
         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).body["email"] as String
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun getRolesFromJwtToken(token: String): List<String> {
-        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).body["roles"] as List<String>
+        var roles = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).body["roles"]
+        return if (roles is List<*>) {
+            roles as List<String>
+        } else {
+            throw JWTException("There's no roles in the JWT Token")
+        }
     }
 
     fun getAuthoritiesFromJwtToken(token: String): List<SimpleGrantedAuthority> {
@@ -65,7 +72,7 @@ class JWTUtils {
         val authorities = getAuthoritiesFromJwtToken(token)
         val roles = getRolesFromJwtToken(token)
 
-        return com.kotlin.bootstrap.security.service.UserDetails(email, username, password, authorities, roles)
+        return UserDetails(email, username, password, authorities, roles)
     }
 
     fun validateJwtToken(authToken: String): Boolean {
