@@ -1,4 +1,4 @@
-package com.kotlin.bootstrap.security.dao
+package com.kotlin.bootstrap.security.dto
 
 data class UserCreatedDTO(
         val username : String,

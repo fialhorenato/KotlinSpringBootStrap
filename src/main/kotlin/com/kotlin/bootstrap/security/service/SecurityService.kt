@@ -1,10 +1,12 @@
 package com.kotlin.bootstrap.security.service
 
-import com.kotlin.bootstrap.security.dao.LoginDTO
-import com.kotlin.bootstrap.security.dao.SignupDTO
+import com.kotlin.bootstrap.security.dto.LoginDTO
+import com.kotlin.bootstrap.security.dto.SignupDTO
 import com.kotlin.bootstrap.security.entity.Role
 import com.kotlin.bootstrap.security.entity.User
+import com.kotlin.bootstrap.security.exception.NotFoundException
 import com.kotlin.bootstrap.security.exception.UserAlreadyExistsException
+import com.kotlin.bootstrap.security.repository.RoleRepository
 import com.kotlin.bootstrap.security.repository.UserRepository
 import com.kotlin.bootstrap.security.utils.JWTUtils
 import org.springframework.context.annotation.Lazy
@@ -21,10 +23,16 @@ import javax.transaction.Transactional
 import kotlin.streams.toList
 
 @Service
-class SecurityService(var authenticationManager: AuthenticationManager, var userRepository: UserRepository, @Lazy var jwtUtils: JWTUtils, var encoder: PasswordEncoder) : UserDetailsService {
+class SecurityService(
+        var authenticationManager: AuthenticationManager,
+        var userRepository: UserRepository,
+        @Lazy var jwtUtils: JWTUtils,
+        var encoder: PasswordEncoder,
+        var roleRepository: RoleRepository
+) : UserDetailsService {
 
     companion object {
-        val ROLE_PREFIX = "ROLE_"
+        const val ROLE_PREFIX = "ROLE_"
     }
 
     fun authenticate(loginDTO: LoginDTO): String {
@@ -48,10 +56,7 @@ class SecurityService(var authenticationManager: AuthenticationManager, var user
 
         var user = User(id = null, username = signupDTO.username, email = signupDTO.email, password = encoder.encode(signupDTO.password), roles = Collections.emptyList())
 
-        user.roles = signupDTO.roles
-                .stream()
-                .map { role -> toRole(role, user) }
-                .toList()
+        user.roles = listOf(toRole("USER", user))
 
         return userRepository.save(user)
     }
@@ -67,7 +72,7 @@ class SecurityService(var authenticationManager: AuthenticationManager, var user
     @Transactional
     override fun loadUserByUsername(username: String): UserDetails {
         val user = userRepository.findByUsername(username)
-        return user.takeIf { user -> user != null }.let { user ->  toUserDetails(user!!) }
+        return toUserDetails(user.takeIf { user -> user != null }!!)
     }
 
     private fun toUserDetails(user: User): UserDetails {
@@ -76,5 +81,23 @@ class SecurityService(var authenticationManager: AuthenticationManager, var user
                 .map { role: Role -> SimpleGrantedAuthority(ROLE_PREFIX + role.role) }
                 .toList()
         return UserDetails(user.id, user.email, user.username, user.password, authorities)
+    }
+
+    fun addRole(userId: String, role: String) {
+        var role = Role(role = role, user = getUser(userId))
+        roleRepository.save(role)
+    }
+
+    fun removeRole(userId: String, role: String) {
+        roleRepository.deleteByUserAndRole(role = role, user = getUser(userId))
+
+    }
+
+    private fun getUser(userId: Long): User {
+        return userRepository.findById(userId).orElseThrow(NotFoundException())
+    }
+
+    private fun getUser(username: String): User {
+        return userRepository.findByUsername(username) ?: throw NotFoundException()
     }
 }

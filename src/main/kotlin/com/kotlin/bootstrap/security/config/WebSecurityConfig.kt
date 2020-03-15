@@ -21,12 +21,12 @@ class WebSecurityConfig(@Lazy var jwtAuthTokenFilter: JWTAuthTokenFilter, @Lazy 
 
     @Bean
     @Lazy
-    override fun authenticationManagerBean(): AuthenticationManager? {
+    override fun authenticationManagerBean(): AuthenticationManager {
         return super.authenticationManagerBean()
     }
 
     @Bean
-    fun passwordEncoder(): PasswordEncoder? {
+    fun passwordEncoder(): PasswordEncoder {
         return BCryptPasswordEncoder()
     }
 
@@ -39,10 +39,13 @@ class WebSecurityConfig(@Lazy var jwtAuthTokenFilter: JWTAuthTokenFilter, @Lazy 
                 .cors()
                 .and()
                 .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers("/security/**").permitAll()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                .antMatchers("/security/**").permitAll()
                 .antMatchers("/api/test/**").permitAll()
-                .anyRequest().authenticated()
+                .anyRequest()
+                .authenticated()
 
         // Add the authentication filter before
         http.addFilterBefore(jwtAuthTokenFilter, UsernamePasswordAuthenticationFilter::class.java)

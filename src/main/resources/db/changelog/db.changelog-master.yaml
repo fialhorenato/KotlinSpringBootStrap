@@ -51,3 +51,6 @@ databaseChangeLog:
               - column:
                   name: role
                   type: varchar(120)
+        - addUniqueConstraint:
+            columnNames: "user_id, role"
+            tableName: roles

@@ -3,7 +3,7 @@ package com.kotlin.bootstrap.security.entity
 import javax.persistence.*
 
 @Entity
-@Table(name = "roles")
+@Table(name = "roles", uniqueConstraints = [UniqueConstraint(columnNames = ["user_id", "role"])])
 data class Role(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,4 +13,8 @@ data class Role(
         var user: User?,
 
         var role: String
-)
+) {
+    constructor(role: String, user: User?) : this(
+            id = null, role = role, user = user
+    )
+}
