@@ -48,7 +48,7 @@ class ErrorHandler() {
 
     @ExceptionHandler(UndeclaredThrowableException::class)
     fun handleUndeclaredThrowableException(ex: UndeclaredThrowableException): ResponseEntity<Any> {
-        return ResponseEntity(generateErrorResponse(ex.undeclaredThrowable.cause.takeIf { it != null }!!.localizedMessage),HttpStatus.BAD_REQUEST)
+        return ResponseEntity(generateErrorResponse(ex.undeclaredThrowable.cause?.localizedMessage ?: ex.localizedMessage),HttpStatus.BAD_REQUEST)
     }
 
     @ExceptionHandler(Exception::class)
