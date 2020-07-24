@@ -7,15 +7,22 @@ import com.kotlin.bootstrap.security.repository.RoleRepository
 import com.kotlin.bootstrap.security.repository.UserRepository
 import com.kotlin.bootstrap.security.service.SecurityService
 import com.kotlin.bootstrap.security.utils.JWTUtils
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.anyOrNull
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import java.util.Optional.of
 
 @ExtendWith(SpringExtension::class)
 class SecurityServiceTest {
@@ -78,6 +85,48 @@ class SecurityServiceTest {
 
         // Then
         verify(roleRepository).deleteByUserAndRole(user = anyOrNull(), role = any())
+    }
+
+    @Test
+    fun getUserByUsername() {
+        // Given
+        val user = User(1L, "username", "email", "password", emptyList())
+
+        // When
+        whenever(userRepository.findByUsername("username")).thenReturn(user)
+        val userResponse = securityService.getUser("username")
+
+        // Then
+        assertThat(userResponse).isNotNull
+        assertThat(userResponse.username).isEqualTo("username")
+    }
+
+    @Test
+    fun getUserByUserId() {
+        // Given
+        val user = User(1L, "username", "email", "password", emptyList())
+
+        // When
+        whenever(userRepository.findById(1L)).thenReturn(of(user))
+        val userResponse = securityService.getUser(1L)
+
+        // Then
+        assertThat(userResponse).isNotNull
+        assertThat(userResponse.username).isEqualTo("username")
+    }
+
+    @Test
+    fun getUsers() {
+        // Given
+        val user = listOf(User(1L, "username", "email", "password", emptyList()))
+
+        // When
+        whenever(userRepository.findAll(Mockito.any(Pageable::class.java))).thenReturn(PageImpl(user))
+        val userResponse = securityService.getUser(Pageable.unpaged())
+
+        // Then
+        assertThat(userResponse.content).isNotEmpty
+        assertThat(userResponse.totalElements).isEqualTo(1)
     }
 
 }

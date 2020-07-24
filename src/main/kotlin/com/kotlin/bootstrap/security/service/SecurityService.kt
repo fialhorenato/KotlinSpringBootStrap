@@ -10,6 +10,9 @@ import com.kotlin.bootstrap.security.repository.RoleRepository
 import com.kotlin.bootstrap.security.repository.UserRepository
 import com.kotlin.bootstrap.security.utils.JWTUtils
 import org.springframework.context.annotation.Lazy
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -18,7 +21,7 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import java.util.*
+import java.util.Collections.emptyList
 import java.util.Objects.nonNull
 import javax.transaction.Transactional
 import kotlin.streams.toList
@@ -44,10 +47,17 @@ class SecurityService(
         // Set the Security context with the authentication
         SecurityContextHolder.getContext().authentication = authentication
 
-        // Generate the JWT Token
-        val jwt = jwtUtils.generateJwtToken(authentication)
+        // Generate and return the JWT Token
+        return jwtUtils.generateJwtToken(authentication)
+    }
 
-        return jwt;
+    fun me(): UserDetails {
+        val authentication = SecurityContextHolder.getContext().authentication
+        return if (authentication.principal is UserDetails) {
+            authentication.principal as UserDetails
+        } else {
+            throw AccessDeniedException("User not authenticated")
+        }
     }
 
     fun createUser(signupDTO: SignupDTO): User {
@@ -55,14 +65,14 @@ class SecurityService(
             throw UserAlreadyExistsException()
         }
 
-        var user = User(id = null, username = signupDTO.username, email = signupDTO.email, password = encoder.encode(signupDTO.password), roles = Collections.emptyList())
+        val user = User(id = null, username = signupDTO.username, email = signupDTO.email, password = encoder.encode(signupDTO.password), roles = emptyList())
 
-        user.roles = listOf(toRole("USER", user))
+        user.roles = listOf(toRole(user =  user))
 
         return userRepository.save(user)
     }
 
-    private fun toRole(role: String, user: User): Role {
+    private fun toRole(role: String = "USER", user: User): Role {
         return Role(null, user, role)
     }
 
@@ -77,12 +87,12 @@ class SecurityService(
     }
 
     private fun toUserDetails(user: User): UserDetails {
-        var authorities = user.roles.stream()
+        val authorities = user.roles.stream()
                 .filter { role: Role -> nonNull(role) }
                 .map { role: Role -> SimpleGrantedAuthority(ROLE_PREFIX + role.role) }
                 .toList()
 
-        var roles = user.roles
+        val roles = user.roles
                 .filter { nonNull(it) }
                 .map { it.role }
                 .toList()
@@ -98,11 +108,15 @@ class SecurityService(
         roleRepository.deleteByUserAndRole(role = role, user = getUser(userId))
     }
 
-    private fun getUser(userId: Long): User {
+    fun getUser(userId: Long): User {
         return userRepository.findById(userId).orElseThrow(NotFoundException(String.format("User %d cannot be found", userId)))
     }
 
-    private fun getUser(username: String): User {
+    fun getUser(username: String): User {
         return userRepository.findByUsername(username) ?: throw NotFoundException(String.format("User %s cannot be found", username))
+    }
+
+    fun getUser(pageable : Pageable): Page<User> {
+        return userRepository.findAll(pageable)
     }
 }
