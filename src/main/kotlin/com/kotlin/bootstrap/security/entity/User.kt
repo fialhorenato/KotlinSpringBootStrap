@@ -20,5 +20,10 @@ data class User (
         var password : String,
 
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "user")
-        var roles : List<Role>
-)
+        var roles : MutableList<Role>
+) {
+        @PrePersist
+        fun setRoles() {
+                roles.forEach { it.user = this }
+        }
+}
