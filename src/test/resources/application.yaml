@@ -5,8 +5,12 @@ spring:
     password: sa
     driver-class-name: org.h2.Driver
 
-kotlinstrap:
-  app:
-    jwtSecret: 59fedfab-9fa7-4a33-9ea0-c76e7729009a
-    jwtExpirationMs: 86400000
+jwt:
+  client:
+    id: kotlinstrap
+    secret: yourSecretHere
+    signing-key: yourSigningKey
+    access-token-validity: 43200
+    authorized-grant-types: password, authorization_code, refresh_token
+    refresh-token-validity: 2592000
 
