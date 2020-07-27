@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.config.annotation.configurers.ClientD
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer
+import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter
 import kotlin.properties.Delegates
 
@@ -45,9 +46,12 @@ class OAuthConfiguration(
 
 
     override fun configure(clients: ClientDetailsServiceConfigurer) {
+        // This client is a trusted client, which means that it has no secret and should
+        // be used only in trusted environments.
+        // Please read https://projects.spring.io/spring-security-oauth/docs/oauth2.html for further information
         clients.inMemory()
                 .withClient(clientId)
-                .secret(passwordEncoder.encode(clientSecret))
+                .secret(passwordEncoder.encode(""))
                 .accessTokenValiditySeconds(accessTokenValiditySeconds)
                 .refreshTokenValiditySeconds(refreshTokenValiditySeconds)
                 .authorizedGrantTypes("password", "authorization_code", "refresh_token")
@@ -64,6 +68,8 @@ class OAuthConfiguration(
 
     @Bean
     fun accessTokenConverter(): JwtAccessTokenConverter {
-        return JwtAccessTokenConverter()
+        val jwtAccessTokenConverter = JwtAccessTokenConverter()
+        jwtAccessTokenConverter.setSigningKey(jwtSigningKey)
+        return jwtAccessTokenConverter
     }
 }

@@ -13,10 +13,6 @@ jwt:
     access-token-validity: 43200
     authorized-grant-types: password, authorization_code, refresh_token
     refresh-token-validity: 2592000
-
-logging:
-  level:
-    org.springframework.security: DEBUG
 ---
 
 spring:

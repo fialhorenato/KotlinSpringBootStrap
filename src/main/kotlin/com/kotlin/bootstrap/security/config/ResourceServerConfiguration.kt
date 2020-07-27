@@ -18,6 +18,7 @@ class ResourceServerConfiguration : ResourceServerConfigurerAdapter() {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .anyRequest().permitAll()
+                .antMatchers("/users/**").permitAll()
+                .anyRequest().authenticated()
     }
 }
