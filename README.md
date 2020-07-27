@@ -1,4 +1,4 @@
-# Spring Boot Kotlin Bootstrap
+# Kotlin Spring Boot Bootstrap Project
 
 ![Java CI with Maven](https://github.com/fialhorenato/KotlinSpringBootStrap/workflows/Java%20CI%20with%20Maven/badge.svg)
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=fialhorenato/KotlinSpringBootStrap)](https://dependabot.com)
