@@ -3,15 +3,13 @@
 ![Java CI with Maven](https://github.com/fialhorenato/KotlinSpringBootStrap/workflows/Java%20CI%20with%20Maven/badge.svg)
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=fialhorenato/KotlinSpringBootStrap)](https://dependabot.com)
 
-## What?
+## What this repo is about?
 
-This project is a base project using Kotlin and Spring Boot with the following dependencies:
+This project is a base (bootstrap) project for backend services using Kotlin and Spring Boot, it contains a security configuration with Roles and Users creation.
+
+## Spring Boot Starters
 
 - Spring Data JPA
-- Spring Security
-- JWT
-- Swagger
-
-In the local profile, it uses PostgreSQL, in the default profile it uses H2 Embedded database
-
-
+- Spring Security OAuth2
+- Spring MVC
+- Spring Devtools (Must be deactivated if you want to use in production)
