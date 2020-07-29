@@ -6,21 +6,21 @@ import javax.validation.constraints.Size
 
 @Entity
 @Table(name = "users")
-data class User (
+data class User(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        var id : Long?,
+        var id: Long?,
 
         @Size(min = 1, max = 100)
-        var username : String,
+        var username: String,
 
         @Email
-        var email : String,
+        var email: String,
 
-        var password : String,
+        var password: String,
 
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "user")
-        var roles : MutableList<Role>
+        var roles: List<Role>
 ) {
         @PrePersist
         fun setRoles() {
