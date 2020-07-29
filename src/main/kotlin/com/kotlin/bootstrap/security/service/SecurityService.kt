@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Propagation.SUPPORTS
 import org.springframework.transaction.annotation.Transactional
 
-@Service("SecurityDetailsService")
+@Service
 class SecurityService(private val userRepository: UserRepository) : UserDetailsService {
 
     companion object {
