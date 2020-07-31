@@ -1,4 +1,4 @@
-package com.kotlin.bootstrap.security.service
+package com.kotlin.bootstrap.security.service.impl
 
 import com.kotlin.bootstrap.security.entity.Role
 import com.kotlin.bootstrap.security.exception.NotFoundException
@@ -8,12 +8,11 @@ import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Propagation.SUPPORTS
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class SecurityService(private val userRepository: UserRepository) : UserDetailsService {
+class SecurityServiceImpl(private val userRepository: UserRepository) : UserDetailsService {
 
     companion object {
         const val ROLE_PREFIX = "ROLE_"

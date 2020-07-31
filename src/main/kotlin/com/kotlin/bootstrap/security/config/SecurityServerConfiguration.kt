@@ -19,7 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
 class SecurityServerConfiguration(
-        @Qualifier("securityService") private val userDetailsService: UserDetailsService
+        @Qualifier("securityServiceImpl") private val userDetailsService: UserDetailsService
 ) : WebSecurityConfigurerAdapter() {
 
     @Bean

@@ -21,7 +21,7 @@ import kotlin.properties.Delegates
 class OAuthConfiguration(
         private val authenticationManager: AuthenticationManager,
         private val passwordEncoder: PasswordEncoder,
-        @Qualifier("securityService") private val userDetailsService: UserDetailsService,
+        @Qualifier("securityServiceImpl") private val userDetailsService: UserDetailsService,
 
         @Value(value = "\${jwt.client.id}")
         val clientId: String,
