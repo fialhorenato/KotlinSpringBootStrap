@@ -1,4 +1,4 @@
-package com.kotlin.bootstrap.security.dto
+package com.kotlin.bootstrap.security.dto.user
 
 import com.kotlin.bootstrap.security.entity.User
 
